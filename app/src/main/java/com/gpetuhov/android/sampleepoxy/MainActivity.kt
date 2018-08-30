@@ -8,6 +8,9 @@ import com.gpetuhov.android.sampleepoxy.data.Item
 import com.gpetuhov.android.sampleepoxy.models.header
 import com.gpetuhov.android.sampleepoxy.models.item
 import kotlinx.android.synthetic.main.activity_main.*
+import android.support.v7.widget.RecyclerView
+import org.jetbrains.anko.toast
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +38,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if ((recyclerView?.canScrollVertically(1)) == false) {
+                    toast("End of list")
+                }
+            }
+        })
     }
 }
 
