@@ -9,6 +9,7 @@ import com.gpetuhov.android.sampleepoxy.models.header
 import com.gpetuhov.android.sampleepoxy.models.item
 import kotlinx.android.synthetic.main.activity_main.*
 import android.support.v7.widget.RecyclerView
+import com.gpetuhov.android.sampleepoxy.models.loader
 import org.jetbrains.anko.toast
 
 
@@ -37,8 +38,13 @@ class MainActivity : AppCompatActivity() {
                     right(it.right)
                 }
             }
+
+            loader {
+                id("loader")
+            }
         }
 
+        // This is needed to detect end of list
         recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
