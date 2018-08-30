@@ -2,47 +2,27 @@ package com.gpetuhov.android.sampleepoxy
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.airbnb.epoxy.EpoxyController
-import com.airbnb.epoxy.EpoxyRecyclerView
 import com.gpetuhov.android.sampleepoxy.data.Item
-import com.gpetuhov.android.sampleepoxy.models.header
-import com.gpetuhov.android.sampleepoxy.models.item
 import kotlinx.android.synthetic.main.activity_main.*
 import android.support.v7.widget.RecyclerView
-import com.gpetuhov.android.sampleepoxy.models.loader
-import org.jetbrains.anko.toast
+import com.gpetuhov.android.sampleepoxy.controller.MainListController
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 
 class MainActivity : AppCompatActivity() {
 
     val items = mutableListOf<Item>()
+    val controller = MainListController(items)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        for (i in 0..100) {
-            items.add(Item("$i", "Data for $i"))
-        }
+        addItems()
 
-        recycler_view.withModels {
-            header {
-                id("header")
-                title("This is the title")
-            }
-
-            items.forEach {
-                item {
-                    id("item ${it.left}")
-                    left(it.left)
-                    right(it.right)
-                }
-            }
-
-            loader {
-                id("loader")
-            }
-        }
+        recycler_view.adapter = controller.adapter
+        controller.requestModelBuild()
 
         // This is needed to detect end of list
         recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -50,18 +30,28 @@ class MainActivity : AppCompatActivity() {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 if ((recyclerView?.canScrollVertically(1)) == false) {
-                    toast("End of list")
+                    loadMore()
                 }
             }
         })
     }
-}
 
-/** Easily add models to an EpoxyRecyclerView, the same way you would in a buildModels method of EpoxyController. */
-fun EpoxyRecyclerView.withModels(buildModelsCallback: EpoxyController.() -> Unit) {
-    setControllerAndBuildModels(object : EpoxyController() {
-        override fun buildModels() {
-            buildModelsCallback()
+    private fun addItems() {
+        val index = items.size
+
+        for (i in 0..100) {
+            items.add(Item("${index + i}", "Data for ${index+i}"))
         }
-    })
+    }
+
+    private fun loadMore() {
+        doAsync {
+            Thread.sleep(3000)
+
+            uiThread {
+                addItems()
+                controller.changeItems(items)
+            }
+        }
+    }
 }
