@@ -3,6 +3,7 @@
 buildscript {
     ext.kotlin_version = '1.2.61'
     ext.anko_version='0.10.5'
+    ext.epoxy_version='2.16.4'
     repositories {
         google()
         jcenter()
@@ -20,6 +21,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 }
 
